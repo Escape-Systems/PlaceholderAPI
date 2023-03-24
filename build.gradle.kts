@@ -2,9 +2,13 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     `java-library`
+    java
     `maven-publish`
     id("com.github.hierynomus.license") version "0.16.1"
     id("io.github.goooler.shadow") version "8.1.7"
+
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
+    id("xyz.jpenilla.run-paper") version "2.3.1"
 }
 
 group = "me.clip"
@@ -19,14 +23,17 @@ repositories {
     mavenLocal()
 
     maven("https://repo.codemc.org/repository/maven-public/")
+    maven("https://repo.papermc.io/repository/maven-snapshots/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://mvn.littleoni.net/snapshots/")
 }
 
 dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.1")
     implementation("net.kyori:adventure-platform-bukkit:4.3.3")
 
-    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT")
+//    compileOnly("dev.folia:folia-api:1.21.4-R0.1-SNAPSHOT")
+    paperweight.devBundle("systems.escape","1.21.4-R0.1-SNAPSHOT")
     compileOnlyApi("org.jetbrains:annotations:23.0.0")
 
     testImplementation("org.openjdk.jmh:jmh-core:1.32")
@@ -38,8 +45,8 @@ dependencies {
 
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 
     withJavadocJar()
     withSourcesJar()
@@ -61,6 +68,13 @@ license {
 val javaComponent: SoftwareComponent = components["java"]
 
 tasks {
+
+    runServer {
+        runDevBundleServer {
+        }
+
+    }
+
     processResources {
         eachFile { expand("version" to project.version) }
     }
@@ -71,7 +85,7 @@ tasks {
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release = 8
+        options.release = 21
     }
 
     withType<Javadoc> {
